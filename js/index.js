@@ -8,7 +8,7 @@
 let arrNhanVien = [];
 
 // =========[Lấy thông tin NV từ form]=========
-function getValueFormNV() {
+function getValueFormNV(nguonChayHam) {
   let isValid = true;
   // tạo 1 object nhanVien có thuộc tính từ lớp đối tượng
   let nhanVien = new NhanVien();
@@ -29,39 +29,44 @@ function getValueFormNV() {
     let errorField = parent.querySelector("span.sp-thongbao");
     let check = checkEmptyValue(value, errorField);
     isValid &= check;
+    console.log("1--", check, isValid);
 
-    // // check tknv và email trùng
-    // for (let oldNhanVien of arrNhanVien) {
-    //   if (value == oldNhanVien.tknv) {
-    //     // alert("trùng tknv");
-    //     errorField.innerHTML = "Tài khoản này đã tồn tại!";
-    //     errorField.style.display = "block";
-    //     errorField.parentElement
-    //       .querySelector("input")
-    //       .classList.remove("valid");
-    //     isValid &= false;
-    //   }
-    //   if (value == oldNhanVien.email) {
-    //     // alert("trùng email");
-    //     errorField.innerHTML = "Email này đã tồn tại!";
-    //     errorField.style.display = "block";
-    //     errorField.parentElement
-    //       .querySelector("input")
-    //       .classList.remove("valid");
-    //     isValid &= false;
-    //   }
-    // }
+    // check tknv và email trùng (chỉ chạy cho riêng case thêm mới NV)
+    if (nguonChayHam == "NEW_NV") {
+      for (let oldNhanVien of arrNhanVien) {
+        if (value == oldNhanVien.tknv) {
+          // alert("trùng tknv");
+          errorField.innerHTML = "Tài khoản này đã tồn tại!";
+          errorField.style.display = "block";
+          errorField.parentElement
+            .querySelector("input")
+            .classList.remove("valid");
+          isValid &= false;
+        }
+        if (value == oldNhanVien.email) {
+          // alert("trùng email");
+          errorField.innerHTML = "Email này đã tồn tại!";
+          errorField.style.display = "block";
+          errorField.parentElement
+            .querySelector("input")
+            .classList.remove("valid");
+          isValid &= false;
+        }
+      }
+    }
 
     if (check) {
       isValid &= field.classList.contains("valid");
     }
 
-    console.log(id, isValid);
     // EOF =====[Validate dữ liệu]=====
   }
-  // console.log(isValid);
+
   if (isValid) {
     return nhanVien;
+  } else {
+    console.error("Dữ liệu không hợp lệ");
+    return null;
   }
 }
 // EOF =====[Lấy thông tin NV từ form]=====
@@ -81,7 +86,7 @@ function renderSaveReset() {
 // ============== Thêm Nhân viên mới =============
 document.getElementById("formQLNV").addEventListener("submit", (event) => {
   event.preventDefault(); //ngăn reload
-  let nhanVien = getValueFormNV();
+  let nhanVien = getValueFormNV("NEW_NV");
   if (!nhanVien) {
     return;
   } else {
@@ -165,6 +170,9 @@ function getInfoNhanVien(maNhanVien) {
   for (let field of arrField) {
     let { id, value } = field; // = nhanVienSua{itemName : value}
     field.value = nhanVienSua[id];
+
+    //set các field về trạng thái dữ liệu hợp lệ
+    field.classList.add("valid");
   }
   console.log(arrField);
   // show modal
@@ -181,8 +189,17 @@ function getInfoNhanVien(maNhanVien) {
 // **** 2. Cập nhật lên giao diện và database =============
 function updateNhanVien() {
   console.log(arrNhanVien);
+  // console.log(arrNhanVien);
+  //
+
   // lấy dữ liệu từ form
-  let nhanVien = getValueFormNV();
+  let nhanVien = getValueFormNV("UPDATE_NV");
+  // Kiểm tra xem nhanVien có hợp lệ không trước khi truy cập thuộc tính
+  if (!nhanVien) {
+    console.error("Đối tượng NhanVien không hợp lệ");
+    return;
+  }
+
   let index = arrNhanVien.findIndex((item) => {
     return item.tknv == nhanVien.tknv;
   });
@@ -220,7 +237,7 @@ function searchNhanVien(event) {
     let xepLoai = removeVietnameseTones(item.xepLoaiNV().toLowerCase().trim());
     return xepLoai.includes(keyword);
   });
-  console.log(arrNhanVienFilter);
+  console.log("arrNhanVienFilter", arrNhanVienFilter);
   // cho hiển thị lên giao diện danh sách đã lọc
   renderArrNhanVien(arrNhanVienFilter);
 }
