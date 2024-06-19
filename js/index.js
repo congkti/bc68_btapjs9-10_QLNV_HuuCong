@@ -30,27 +30,27 @@ function getValueFormNV() {
     let check = checkEmptyValue(value, errorField);
     isValid &= check;
 
-    // check tknv và email trùng
-    for (let oldNhanVien of arrNhanVien) {
-      if (value == oldNhanVien.tknv) {
-        // alert("trùng tknv");
-        errorField.innerHTML = "Tài khoản này đã tồn tại!";
-        errorField.style.display = "block";
-        errorField.parentElement
-          .querySelector("input")
-          .classList.remove("valid");
-        isValid &= false;
-      }
-      if (value == oldNhanVien.email) {
-        // alert("trùng email");
-        errorField.innerHTML = "Email này đã tồn tại!";
-        errorField.style.display = "block";
-        errorField.parentElement
-          .querySelector("input")
-          .classList.remove("valid");
-        isValid &= false;
-      }
-    }
+    // // check tknv và email trùng
+    // for (let oldNhanVien of arrNhanVien) {
+    //   if (value == oldNhanVien.tknv) {
+    //     // alert("trùng tknv");
+    //     errorField.innerHTML = "Tài khoản này đã tồn tại!";
+    //     errorField.style.display = "block";
+    //     errorField.parentElement
+    //       .querySelector("input")
+    //       .classList.remove("valid");
+    //     isValid &= false;
+    //   }
+    //   if (value == oldNhanVien.email) {
+    //     // alert("trùng email");
+    //     errorField.innerHTML = "Email này đã tồn tại!";
+    //     errorField.style.display = "block";
+    //     errorField.parentElement
+    //       .querySelector("input")
+    //       .classList.remove("valid");
+    //     isValid &= false;
+    //   }
+    // }
 
     if (check) {
       isValid &= field.classList.contains("valid");
